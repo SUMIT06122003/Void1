@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductContext from '../context/ProductContext';
@@ -12,19 +12,21 @@ import reviewVideoFour from '../assets/testimonials/WhatsApp Video 2026-05-02 at
 const Home = () => {
   const { products } = useContext(ProductContext);
   const featured = products.slice(0, 4);
-  const [loadingCards, setLoadingCards] = useState([true, true, true, true]);
+  const [showIntro, setShowIntro] = useState(true);
   const reviewVideos = [reviewVideoOne, reviewVideoTwo, reviewVideoThree, reviewVideoFour];
 
-  React.useEffect(() => {
-    const timers = featured.map((_, idx) => setTimeout(() => {
-      setLoadingCards(prev => {
-        const newState = [...prev];
-        newState[idx] = false;
-        return newState;
-      });
-    }, 100 + idx * 150));
-    return () => timers.forEach(t => clearTimeout(t));
-  }, [featured]);
+  useEffect(() => {
+    if (showIntro) {
+      document.body.classList.add('modal-open');
+    }
+
+    return () => document.body.classList.remove('modal-open');
+  }, [showIntro]);
+
+  const handleIntroClose = () => {
+    document.body.classList.remove('modal-open');
+    setShowIntro(false);
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -52,6 +54,64 @@ const Home = () => {
 
   return (
     <div className="page-section">
+      {showIntro && (
+        <motion.div
+          className="intro-modal-backdrop"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.25 }}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="void-intro-title"
+        >
+          <motion.div
+            className="intro-modal"
+            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+          >
+            <div className="intro-modal-copy">
+              <span className="brand-pill">WHY CHOOSE VOID ACTIVEWEAR</span>
+              <h2 id="void-intro-title">Built sharp. Moves harder. Priced honest.</h2>
+              <p>
+                VOID blends sleek gym-ready silhouettes with breathable performance fabric, so your fit looks premium before, during, and after training.
+              </p>
+              <div className="intro-style-row" aria-label="VOID Activewear highlights">
+                <span>Minimal logo finish</span>
+                <span>Workout-ready fabric</span>
+                <span>Street-clean fit</span>
+              </div>
+              <button className="button-primary" type="button" onClick={handleIntroClose}>
+                Enter VOID
+              </button>
+            </div>
+            <div className="intro-showcase">
+              <div className="intro-product-frame">
+                <img src={heroProduct} alt="VOID black performance t-shirt" />
+                <span className="intro-drop-label">VOID PERFORMANCE</span>
+              </div>
+              <div className="intro-benefit-grid">
+                <article>
+                  <span>01</span>
+                  <h3>Quick-dry comfort</h3>
+                  <p>Cool-touch materials built for sweat, stretch, and all-day movement.</p>
+                </article>
+                <article>
+                  <span>02</span>
+                  <h3>Precision fit</h3>
+                  <p>Athletic cuts that frame cleanly without bulk or restriction.</p>
+                </article>
+                <article>
+                  <span>03</span>
+                  <h3>Original pricing</h3>
+                  <p>Premium finish and performance details at authentic Indian prices.</p>
+                </article>
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+
       <motion.section
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
@@ -140,9 +200,9 @@ const Home = () => {
           whileInView="visible"
           viewport={{ once: true, margin: '-100px' }}
         >
-          {featured.map((product, idx) => (
+          {featured.map((product) => (
             <motion.div key={product.id} variants={itemVariants}>
-              <ProductCard product={product} isLoading={loadingCards[idx]} />
+              <ProductCard product={product} />
             </motion.div>
           ))}
         </motion.div>
