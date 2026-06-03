@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import ProductContext from '../context/ProductContext';
@@ -15,16 +15,7 @@ const Home = () => {
   const [showIntro, setShowIntro] = useState(true);
   const reviewVideos = [reviewVideoOne, reviewVideoTwo, reviewVideoThree, reviewVideoFour];
 
-  useEffect(() => {
-    if (showIntro) {
-      document.body.classList.add('modal-open');
-    }
-
-    return () => document.body.classList.remove('modal-open');
-  }, [showIntro]);
-
   const handleIntroClose = () => {
-    document.body.classList.remove('modal-open');
     setShowIntro(false);
   };
 
@@ -60,13 +51,12 @@ const Home = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.25 }}
-          role="dialog"
-          aria-modal="true"
+          role="region"
           aria-labelledby="void-intro-title"
         >
           <motion.div
             className="intro-modal"
-            initial={{ opacity: 0, y: 24, scale: 0.96 }}
+            initial={{ opacity: 0, y: -18, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
           >
@@ -81,10 +71,15 @@ const Home = () => {
                 <span>Workout-ready fabric</span>
                 <span>Street-clean fit</span>
               </div>
-              <button className="button-primary" type="button" onClick={handleIntroClose}>
-                Enter VOID
-              </button>
             </div>
+            <button
+              className="intro-close-button"
+              type="button"
+              onClick={handleIntroClose}
+              aria-label="Close intro banner"
+            >
+              &times;
+            </button>
             <div className="intro-showcase">
               <div className="intro-product-frame">
                 <img src={heroProduct} alt="VOID black performance t-shirt" />
